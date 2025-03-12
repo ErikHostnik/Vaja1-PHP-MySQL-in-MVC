@@ -6,8 +6,6 @@
         
     TODO:
         list: izpiše novice prijavljenega uporabnika
-        create: izpiše obrazec za vstavljanje novice
-        store: vstavi novico v bazo
         edit: izpiše vmesnik za urejanje novice
         update: posodobi novico v bazi
         delete: izbriše novico iz baze
@@ -42,26 +40,35 @@ class articles_controller
     }
 
     public function store()
-{
-    if (!isset($_SESSION['USER_ID'])) {
-        return call('auth', 'login');
+    {
+        if (!isset($_SESSION['USER_ID'])) {
+            return call('auth', 'login');
+        }
+
+        if (!isset($_POST['title']) || !isset($_POST['abstract']) || !isset($_POST['text'])) {
+            return call('pages', 'error');
+        }
+
+        $title = $_POST['title'];
+        $abstract = $_POST['abstract'];
+        $text = $_POST['text'];
+        $user_id = $_SESSION['USER_ID'];
+
+        if (Article::create($title, $abstract, $text, date('Y-m-d H:i:s'), $user_id)) {
+            header("Location: /articles/index");
+        } else {
+            header("Location: /articles/create?error=4");
+        }
     }
 
-    if (!isset($_POST['title']) || !isset($_POST['abstract']) || !isset($_POST['text'])) {
-        return call('pages', 'error');
+    public function list() {
+        if(!isset($_SESSION["USER_ID"])){
+            return call('auth', 'login');
+        }
+        $user_id = $_SESSION['USER_ID'];
+        $articles = Article::findByUser($user_id);
+        require_once('views/articles/list.php');
     }
-
-    $title = $_POST['title'];
-    $abstract = $_POST['abstract'];
-    $text = $_POST['text'];
-    $user_id = $_SESSION['USER_ID'];
-
-    if (Article::create($title, $abstract, $text, date('Y-m-d H:i:s'), $user_id)) {
-        header("Location: /articles/index");
-    } else {
-        header("Location: /articles/create?error=4");
-    }
-}
 
     
 
