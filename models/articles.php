@@ -102,6 +102,18 @@ class Article
         }
 
     }
+
+    public static function delete($id){
+        $db = Db::getInstance();
+        $id = mysqli_real_escape_string($db, $id);
+        $query = "DELETE FROM articles WHERE id = '$id';";
+        if($db->query($query)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     
 }
 

@@ -11,6 +11,9 @@
         delete: izbriše novico iz baze
 */
 
+require_once 'models/articles.php';
+require_once 'models/comments.php';
+
 class articles_controller
 {
     public function index()
@@ -32,6 +35,7 @@ class articles_controller
         }
         //drugače najdemo oglas in ga prikažemo
         $article = Article::find($_GET['id']);
+        $comments = Comment::findByArticleId($_GET['id']);
         require_once('views/articles/show.php');
     }
 
@@ -116,6 +120,33 @@ class articles_controller
             exit();
         }
 
+    }
+
+
+    public function delete() {
+        if(!isset($_SESSION['USER_ID'])){
+            return call('auth', 'login');
+        }
+
+        if (!isset($_GET['id']) ) {
+            return call('pages', 'error');
+        }
+
+        $id = $_GET['id'];
+        $article = Article::find($id);
+        if ($article->user->id != $_SESSION['USER_ID']) {
+            return call('pages', 'error');
+        }
+
+        
+
+        if (Article::delete($id)) {
+            header("Location: /articles/list");
+            exit();
+        } else {
+            header("Location: /articles/list?error=2");
+            exit();
+        }
     }
 
     

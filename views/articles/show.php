@@ -6,5 +6,8 @@
         <p><?php echo $article->text; ?></p>
         <p>Objavil: <?php echo $article->user->username; ?>, <?php echo date_format(date_create($article->date), 'd. m. Y \ob H:i:s'); ?></p>
         <a href="/"><button>Nazaj</button></a>
+
+        <?php require_once('views/comments/create.php'); ?>
+        <?php require_once('views/comments/index.php'); ?>
     </div>
 </div>
