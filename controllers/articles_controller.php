@@ -70,6 +70,54 @@ class articles_controller
         require_once('views/articles/list.php');
     }
 
+    public function edit() {
+        if(!isset($_SESSION['USER_ID'])){
+            return call('auth', 'login');
+        }
+
+        if (!isset($_GET["id"])) {
+            return call('pages', 'error');
+        }
+        $id = $_GET['id'];
+        $article = Article::find($id);
+
+        if($article->user->id != $_SESSION['USER_ID']){
+            return call('pages', 'error');
+        }
+
+        require_once('views/articles/edit.php');
+    }
+
+    public function update() {
+        if(!isset($_SESSION['USER_ID'])){
+            return call('auth', 'login');
+        }
+
+        if (!isset($_POST['id']) || !isset($_POST['title']) || !isset($_POST['abstract']) || !isset($_POST['text'])) {
+            return call('pages', 'error');
+        }
+
+        $id = $_POST['id'];
+        $title = $_POST['title'];
+        $abstract = $_POST['abstract'];
+        $text = $_POST['text'];
+
+        $article = Article::find($id);
+
+        if ($article->user->id != $_SESSION['USER_ID']) {
+            return call('pages', 'error');
+        }
+
+        if (Article::update($id, $title, $abstract, $text)) {
+            header("Location: /articles/list");
+            exit();
+        } else {
+            header("Location: /articles/edit?id=$id&error=1");
+            exit();
+        }
+
+    }
+
     
 
 
